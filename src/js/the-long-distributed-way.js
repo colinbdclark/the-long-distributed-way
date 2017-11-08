@@ -31,7 +31,17 @@ fluid.defaults("colin.theLongWay.glRenderer", {
     gradeNames: "aconite.glRenderer.singleLayer",
 
     shaders: {
-        fragment: "node_modules/aconite/src/shaders/readTopLayerFragmentShader.frag",
+        fragment: "src/shaders/the-long-distributed-way.frag",
         vertex: "node_modules/aconite/src/shaders/stageVertexShader.vert"
+    },
+
+    uniforms: {
+        videoSize: {
+            type: "2f",
+            values: [
+                384,
+                288
+            ]
+        }
     }
 });
