@@ -1,0 +1,16 @@
+{
+    "name": "the-long-way",
+    "productName": "The Long (Distributed) Way",
+    "description": "The Long (Distributed) Way, a video by Colin Clark",
+    "version": "1.0.0",
+    "author": "Colin Clark",
+    "license": "MIT",
+    "repository": "git://github.com/colinbdclark/the-long-way.git",
+    "bugs": "http://github.com/colinbdclark/the-long-way/issues",
+    "homepage": "http://github.com/colinbdclark/the-long-way",
+    "readmeFilename": "README.md",
+    "dependencies": {
+        "aconite": "../aconite",
+        "flocking": "0.2.0-dev.20170206T221943Z.fb09a52"
+    }
+}

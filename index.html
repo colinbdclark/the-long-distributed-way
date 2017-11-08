@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>The Long (Distributed) Way</title>
+
+        <link rel="stylesheet" href="node_modules/aconite/src/ui/css/stage.css" type="text/css" />
+        <link rel="stylesheet" href="node_modules/aconite/src/ui/css/playButton.css" type="text/css" />
+
+        <script src="node_modules/aconite/dist/aconite-all.js"></script>
+        <script src="node_modules/aconite/src/ui/js/playButton.js"></script>
+
+        <script src="src/js/the-long-distributed-way.js"></script>
+    </head>
+    <body>
+        <div class="aconite-video-container">
+            <canvas class="aconite-animator-canvas" width="1280" height="800" />
+        </div>
+
+        <script>
+            window.theLongWay = colin.theLongWay(".aconite-video-container");
+        </script>
+    </body>
+</html>
