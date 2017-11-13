@@ -37,77 +37,77 @@ fluid.defaults("colin.theLongWay.modulationLayer", {
     bindToTextureUnit: "TEXTURE1",
 
     model: {
-        inTime: 14,
-        outTime: 27
+        inTime: "{that}.options.clips.albatrossesInCalm.inTime",
+        outTime: "{that}.options.clips.albatrossesInCalm.outTime"
     },
 
     clips: {
-        "drinking coffee": {
+        "drinkingCoffee": {
             inTime: 4 * 60 + 27,
             outTime: 5 * 60
         },
 
-        "sails from the mast": {
+        "sailsFromTheMast": {
             inTime: 5 * 60 + 36,
             outTime: 6 * 60 + 9
         },
 
-        "first sunset": {
+        "firstSunset": {
             inTime: 6 * 60 + 18,
             outTime: 6 * 60 + 29
         },
 
-        "les oiseaux de terres": {
+        "lesOiseauxDeTerres": {
             inTime: 9 * 60 + 22,
             outTime: 9 * 60 + 52
         },
 
-        "dolphin squares": {
+        "dolphinSquares": {
             inTime: 10 * 60 + 32,
             outTime: 10 * 60 + 45
         },
 
-        "dolphin squares 2": {
+        "dolphinSquares2": {
             inTime: 11 * 60 + 7,
             outTime: 11 * 60 + 44
         },
 
-        "sails from the mast 2": {
+        "sailsFromTheMast2": {
             inTime: 17 * 60 + 8,
             outTime: 17 * 60 + 59
         },
 
-        "albatrosses in calm": {
-            inTime: 18 * 60 + 20,
+        "albatrossesInCalm": {
+            inTime: 18 * 60 + 20.2,
             outTime: 19 * 60
         },
 
-        "cheese-eating birds with lots of squares": {
+        "cheeseEatingBirdsWithLotsOfSquares": {
             inTime: 19 * 60 + 45,
             outTime: 19 * 50 + 56
         },
 
-        "albatrosses in swells": {
+        "albatrossesInSwells": {
             inTime: 19 * 60 + 57,
             outTime: 20 * 60 + 13
         },
 
-        "heavy waves southern ocean": {
+        "heavyWavesSouthernOcean": {
             inTime: 20 * 60 + 24,
             outTime: 23 * 60 + 4
         },
 
-        "cape horn": {
+        "capeHorn": {
             inTime: 23 * 60 + 16,
             outTime: 24 * 60 + 42
         },
 
-        "sepia storm footage": {
+        "sepiaStormFootage": {
             inTime: 24 * 60 + 43,
             outTime: 26 * 60 + 23
         },
 
-        "sunset footage": {
+        "sunsetFootage": {
             inTime: 27 * 60 + 21,
             outTime: 27 * 60 + 55
         },

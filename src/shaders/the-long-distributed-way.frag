@@ -29,7 +29,7 @@ vec4 blockySmoothed(vec4 sampled) {
     vec3 smoothed = smoothstep(sampled.rgb, black().rgb, vec3(0.9, 0.9, 0.9));
 
     // Then AMPLIFY!
-    return vec4(smoothed * 10.0, 1.0);
+    return vec4(smoothed * vec3(20.0), 1.0);
 }
 
 vec4 geometricallySpacedSmoothedByLuminance(vec4 sampled, float lum, vec2 scaledCoordsRemainder) {
@@ -40,7 +40,7 @@ vec4 geometricallySpacedSmoothedByLuminance(vec4 sampled, float lum, vec2 scaled
         return black();
     }
 
-    vec3 allLum = vec3(lum, lum, lum);
+    vec3 allLum = vec3(lum);
 
     // Crazy smoothstepping by luminance value.
     vec3 smoothed = smoothstep(sampled.rgb, black().rgb, allLum);
@@ -57,6 +57,19 @@ vec4 geometricallySpacedBright(vec4 sampled, float lum, vec2 scaledCoordsRemaind
     return lum < 0.9 ? black() : sampled;
 }
 
+vec4 deflectedBright(vec4 sampled, float lum, vec2 scaledCoordsRemainder) {
+    // TODO: Cut and pasted from above.
+    if (scaledCoordsRemainder.x > 0.07 || scaledCoordsRemainder.y > 0.07) {
+        vec4 modulationSampled = sampleFromLayer(modulationLayerSampler);
+        if (luminance(modulationSampled.rgb) > 0.5) {
+            return black();
+        }
+    }
+
+    // Modulate this luminance check between around 0.7 and 1.0.
+    return mix(lum < 0.9 ? black() : sampled, blockySmoothed(sampled), 0.5);
+}
+
 void main(void) {
     vec4 sampled = sampleFromLayer(videoLayerSampler);
     float lum = luminance(sampled.rgb);
@@ -65,10 +78,11 @@ void main(void) {
     vec2 scaledCoordsRemainder = fract(scaledCoords);
 
     gl_FragColor =
-    geometricallySpacedBright(sampled, lum, scaledCoordsRemainder)
-    +
-    geometricallySpacedSmoothedByLuminance(sampled, lum, scaledCoordsRemainder)
+    // geometricallySpacedBright(sampled, lum, scaledCoordsRemainder)
+    // +
+    // geometricallySpacedSmoothedByLuminance(sampled, lum, scaledCoordsRemainder)
     // +
     // blockySmoothed(sampled)
+    deflectedBright(sampled, lum, scaledCoordsRemainder)
     ;
 }
