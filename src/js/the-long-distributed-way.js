@@ -135,7 +135,7 @@ fluid.defaults("colin.theLongWay.modulationLayer", {
 });
 
 fluid.defaults("colin.theLongWay.glRenderer", {
-    gradeNames: "aconite.glRenderer.singleLayer",
+    gradeNames: "aconite.glRenderer",
 
     shaders: {
         fragment: "src/shaders/the-long-distributed-way.frag",
@@ -143,6 +143,11 @@ fluid.defaults("colin.theLongWay.glRenderer", {
     },
 
     uniforms: {
+        videoLayerSampler: {
+            type: "1i",
+            values: 0
+        },
+
         modulationLayerSampler: {
             type: "1i",
             values: 1

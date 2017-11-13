@@ -1,6 +1,6 @@
 precision highp float;
 
-uniform sampler2D layerSampler;
+uniform sampler2D videoLayerSampler;
 uniform sampler2D modulationLayerSampler;
 uniform vec2 textureSize;
 uniform vec2 videoSize;
@@ -15,55 +15,60 @@ vec4 black() {
     return vec4(0.0, 0.0, 0.0, 1.0);
 }
 
-vec4 blockyLum(void) {
-    vec2 scaledCoords = gl_FragCoord.xy * (videoSize / textureSize);
-    vec2 vidCoords = scaledCoords.xy / videoSize.xy;
-    vec4 sampled = texture2D(layerSampler, scaledCoords.xy / videoSize.xy);
-    float lum = luminance(sampled.rgb);
+vec2 scaleCoordinatesToVideo(void) {
+    return gl_FragCoord.xy * (videoSize / textureSize);
+}
+
+vec4 sampleFromLayer(sampler2D layerSampler) {
+    vec2 scaledCoords = scaleCoordinatesToVideo();
+    return texture2D(layerSampler, scaledCoords.xy / videoSize.xy);
+}
+
+vec4 blockySmoothed(vec4 sampled) {
+    // Crazy, arbitrary values.
     vec3 smoothed = smoothstep(sampled.rgb, black().rgb, vec3(0.9, 0.9, 0.9));
 
+    // Then AMPLIFY!
     return vec4(smoothed * 10.0, 1.0);
 }
 
-vec4 smoothLum(void) {
-    vec2 scaledCoords = gl_FragCoord.xy * (videoSize / textureSize);
-    vec2 remainder = fract(scaledCoords);
-
-    // TODO: Why these numbers? What am I doing?
-    if (remainder.x > 0.07 || remainder.y > 0.07) {
+vec4 geometricallySpacedSmoothedByLuminance(vec4 sampled, float lum, vec2 scaledCoordsRemainder) {
+    // Why these numbers? What am I doing?
+    if (scaledCoordsRemainder.x > 0.07 || scaledCoordsRemainder.y > 0.07) {
         // We're "in between" pixels in the video and
         // should just render a black fragment.
         return black();
     }
 
-    vec2 vidCoords = scaledCoords.xy / videoSize.xy;
-    vec4 sampled = texture2D(layerSampler, scaledCoords.xy / videoSize.xy);
-    float lum = luminance(sampled.rgb);
-    vec3 smoothed = smoothstep(sampled.rgb, black().rgb, vec3(lum, lum, lum));
+    vec3 allLum = vec3(lum, lum, lum);
+
+    // Crazy smoothstepping by luminance value.
+    vec3 smoothed = smoothstep(sampled.rgb, black().rgb, allLum);
 
     return vec4(smoothed, 1.0);
 }
 
-vec4 spacedLum(void) {
-    vec2 scaledCoords = gl_FragCoord.xy * (videoSize / textureSize);
-    vec2 remainder = fract(scaledCoords);
-
-    // TODO: Why these numbers? What am I doing?
-    if (remainder.x > 0.07 || remainder.y > 0.07) {
-        // We're "in between" pixels in the video and
-        // should just render a black fragment.
+vec4 geometricallySpacedBright(vec4 sampled, float lum, vec2 scaledCoordsRemainder) {
+    // TODO: Cut and pasted from above.
+    if (scaledCoordsRemainder.x > 0.07 || scaledCoordsRemainder.y > 0.07) {
         return black();
     }
-
-    vec2 vidCoords = scaledCoords.xy / videoSize.xy;
-    vec4 sampled = texture2D(layerSampler, scaledCoords.xy / videoSize.xy);
-    float lum = luminance(sampled.rgb);
 
     return lum < 0.9 ? black() : sampled;
 }
 
 void main(void) {
-    vec2 scaledCoords = gl_FragCoord.xy * (videoSize / textureSize);
+    vec4 sampled = sampleFromLayer(videoLayerSampler);
+    float lum = luminance(sampled.rgb);
 
-    gl_FragColor = /*spacedLum() +  */blockyLum()/* + (texture2D(loopLayerSampler, scaledCoords.xy / videoSize.xy) / 5.0)*/;
+    vec2 scaledCoords = gl_FragCoord.xy * (videoSize / textureSize);
+    vec2 scaledCoordsRemainder = fract(scaledCoords);
+
+    gl_FragColor =
+    geometricallySpacedBright(sampled, lum, scaledCoordsRemainder)
+    +
+    geometricallySpacedSmoothedByLuminance(sampled, lum, scaledCoordsRemainder)
+    // +
+    // blockySmoothed(sampled)
+    ;
 }
