@@ -4,6 +4,7 @@ uniform sampler2D videoLayerSampler;
 uniform sampler2D modulationLayerSampler;
 uniform vec2 textureSize;
 uniform vec2 videoSize;
+uniform float layerMix;
 
 // From https://github.com/AnalyticalGraphicsInc/cesium/blob/master/Source/Shaders/Builtin/Functions/luminance.glsl
 float luminance(vec3 rgb) {
@@ -77,12 +78,12 @@ void main(void) {
     vec2 scaledCoords = gl_FragCoord.xy * (videoSize / textureSize);
     vec2 scaledCoordsRemainder = fract(scaledCoords);
 
-    gl_FragColor =
-    // geometricallySpacedBright(sampled, lum, scaledCoordsRemainder)
-    // +
-    // geometricallySpacedSmoothedByLuminance(sampled, lum, scaledCoordsRemainder)
-    // +
-    // blockySmoothed(sampled)
-    deflectedBright(sampled, lum, scaledCoordsRemainder)
-    ;
+    vec4 bottom = deflectedBright(sampled, lum, scaledCoordsRemainder);
+    vec4 top = blockySmoothed(sampled);
+
+    // TODO: Modulate this mix for greater psychedelia.
+    vec3 mixed = mix(bottom.rgb, top.rgb, 0.0);
+
+    gl_FragColor = vec4(mixed, 1.0);
+    // gl_FragColor = sampleFromLayer(modulationLayerSampler);
 }

@@ -10,7 +10,7 @@
     "homepage": "http://github.com/colinbdclark/the-long-way",
     "readmeFilename": "README.md",
     "dependencies": {
-        "aconite": "../aconite",
+        "aconite": "file:../aconite",
         "flocking": "0.2.0-dev.20170206T221943Z.fb09a52"
     }
 }
