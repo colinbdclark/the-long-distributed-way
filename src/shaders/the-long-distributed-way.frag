@@ -68,7 +68,17 @@ vec4 deflectedBright(vec4 sampled, float lum, vec2 scaledCoordsRemainder) {
     }
 
     // Modulate this luminance check between around 0.7 and 1.0.
-    return mix(lum < 0.9 ? black() : sampled, blockySmoothed(sampled), 0.5);
+    vec4 dottier = mix(lum < 0.9 ? black() : sampled, blockySmoothed(sampled), 0.5);
+
+    // This version is also nice. Can we mix it at some point?
+    // return mix(sampled * lum, blockySmoothed(sampled) * lum, 0.5);
+
+    // Really, really nice!
+    // And could be great mixed with the first one.
+    vec4 murkier = mix(blockySmoothed(sampled) * 1.0 - lum, sampled, 0.5);
+
+    // Modulate this multiplier.
+    return vec4(mix(murkier.rgb, dottier.rgb, 0.3), 1.0) * 5.0;
 }
 
 void main(void) {
