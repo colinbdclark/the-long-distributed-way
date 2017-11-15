@@ -6,17 +6,55 @@ fluid.defaults("colin.theLongWay", {
         "aconite.compositor.autoPlay"
     ],
 
+    fps: 60,
+
+    uniformModelMap: {
+        layerMix: "layerMix",
+        lumThreshold: "lumThreshold",
+        gain: "gain"
+    },
+
+    model: {
+        layerMix: "{glRenderer}.options.uniforms.layerMix.values",
+        lumThreshold: "{glRenderer}.options.uniforms.lumThreshold.values",
+        gain: "{glRenderer}.options.uniforms.gain.values"
+    },
+
     components: {
         videoLayer: {
             type: "colin.theLongWay.videoLayer"
+        },
+
+        videoLayerSpeedSynth: {
+            type: "colin.theLongWay.videoLayerSpeedSynth"
         },
 
         modulationLayer: {
             type: "colin.theLongWay.modulationLayer"
         },
 
+        modulationLayerSpeedSynth: {
+            type: "colin.theLongWay.modulationLayerSpeedSynth"
+        },
+
+        layerMixSynth: {
+            type: "colin.theLongWay.layerMixSynth"
+        },
+
+        lumThresholdSynth: {
+            type: "colin.theLongWay.lumThresholdSynth"
+        },
+
+        gainSynth: {
+            type: "colin.theLongWay.gainSynth"
+        },
+
         glRenderer: {
             type: "colin.theLongWay.glRenderer"
+        },
+
+        enviro: {
+            type: "flock.silentEnviro"
         }
     }
 });
@@ -234,6 +272,14 @@ fluid.defaults("colin.theLongWay.modulationLayer", {
                 outTime: 30 * 60 + 42
             }
         ]
+    },
+
+    listeners: {
+        onNextClip: {
+            "this": "console",
+            method: "log",
+            args: ["{arguments}.0.name"]
+        }
     }
 });
 
@@ -267,6 +313,161 @@ fluid.defaults("colin.theLongWay.glRenderer", {
         layerMix: {
             type: "1f",
             values: 0.0
+        },
+
+        lumThreshold: {
+            type: "1f",
+            values: 0.9
+        },
+
+        gain: {
+            type: "1f",
+            values: 5.0
         }
+    }
+});
+
+// TODO: This can be generalized into Aconite.
+fluid.defaults("colin.theLongWay.speedModulatorSynth", {
+    gradeNames: "flock.synth.frameRate",
+
+    fps: "{theLongWay}.options.fps",
+
+    components: {
+        enviro: "{theLongWay}.enviro",
+
+        layer: {
+            type: "fluid.notImplemented"
+        }
+    },
+
+    events: {
+        onTick: "{clock}.events.onTick"
+    },
+
+    listeners: {
+        onTick: {
+            funcName: "colin.theLongWay.speedModulatorSynth.modulate",
+            args: ["{that}"]
+        }
+    }
+});
+
+colin.theLongWay.speedModulatorSynth.modulate = function (that) {
+    var rate = that.value();
+    that.layer.source.element.playbackRate = rate;
+};
+
+
+fluid.defaults("colin.theLongWay.videoLayerSpeedSynth", {
+    gradeNames: "colin.theLongWay.speedModulatorSynth",
+
+    components: {
+        layer: "{theLongWay}.videoLayer"
+    },
+
+    synthDef: {
+        ugen: "flock.ugen.lfSaw",
+        freq: 1/80,
+        mul: 0.2,
+        add: 0.8
+    }
+});
+
+fluid.defaults("colin.theLongWay.modulationLayerSpeedSynth", {
+    gradeNames: "colin.theLongWay.speedModulatorSynth",
+
+    components: {
+        layer: "{theLongWay}.modulationLayer.layer"
+    },
+
+    synthDef: {
+        ugen: "flock.ugen.lfSaw",
+        freq: 1/70,
+        mul: 0.2,
+        add: 0.8
+    }
+});
+
+// TODO: Fix all of Flocking, including the fact that
+// it has components that have "model" properties,
+// yet which aren't actually fluid.modelComponents.
+// Also the incompatibilites between
+// flock.modelSynth and flock.synth.value.
+fluid.defaults("colin.theLongWay.modelUpdatingSynth", {
+    gradeNames: "flock.synth.frameRate",
+
+    targetModelPath: "value",
+
+    components: {
+        target: {
+            type: "fluid.notImplemented"
+        }
+    },
+
+    events: {
+        onTick: "{clock}.events.onTick"
+    },
+
+    listeners: {
+        onTick: "colin.theLongWay.modelUpdatingSynth.updateValue({that})"
+    }
+});
+
+colin.theLongWay.modelUpdatingSynth.updateValue = function (that) {
+    var val = that.value();
+    that.target.applier.change(that.options.targetModelPath, val);
+};
+
+fluid.defaults("colin.theLongWay.layerMixSynth", {
+    gradeNames: "colin.theLongWay.modelUpdatingSynth",
+
+    targetModelPath: "layerMix",
+
+    components: {
+        target: "{theLongWay}"
+    },
+
+    synthDef: {
+        ugen: "flock.ugen.triOsc",
+        phase: Math.PI,
+        freq: 1/15,
+        mul: 0.5,
+        add: 0.5
+    }
+});
+
+fluid.defaults("colin.theLongWay.lumThresholdSynth", {
+    gradeNames: "colin.theLongWay.modelUpdatingSynth",
+
+    targetModelPath: "lumThreshold",
+
+    components: {
+        target: "{theLongWay}"
+    },
+
+    synthDef: {
+        ugen: "flock.ugen.triOsc",
+        freq: 1/145,
+        mul: 0.10,
+        add: 0.90
+    }
+});
+
+
+fluid.defaults("colin.theLongWay.gainSynth", {
+    gradeNames: "colin.theLongWay.modelUpdatingSynth",
+
+    targetModelPath: "gain",
+
+    components: {
+        target: "{theLongWay}"
+    },
+
+    synthDef: {
+        ugen: "flock.ugen.sinOsc",
+        freq: 1/75,
+        mul: 1,
+        add: 5
     }
 });

@@ -5,6 +5,8 @@ uniform sampler2D modulationLayerSampler;
 uniform vec2 textureSize;
 uniform vec2 videoSize;
 uniform float layerMix;
+uniform float lumThreshold;
+uniform float gain;
 
 // From https://github.com/AnalyticalGraphicsInc/cesium/blob/master/Source/Shaders/Builtin/Functions/luminance.glsl
 float luminance(vec3 rgb) {
@@ -68,17 +70,16 @@ vec4 deflectedBright(vec4 sampled, float lum, vec2 scaledCoordsRemainder) {
     }
 
     // Modulate this luminance check between around 0.7 and 1.0.
-    vec4 dottier = mix(lum < 0.9 ? black() : sampled, blockySmoothed(sampled), 0.5);
+    vec4 dottier = mix(lum < lumThreshold ? black() : sampled, blockySmoothed(sampled), 0.5);
 
     // This version is also nice. Can we mix it at some point?
     // return mix(sampled * lum, blockySmoothed(sampled) * lum, 0.5);
 
     // Really, really nice!
-    // And could be great mixed with the first one.
     vec4 murkier = mix(blockySmoothed(sampled) * 1.0 - lum, sampled, 0.5);
 
     // Modulate this multiplier.
-    return vec4(mix(murkier.rgb, dottier.rgb, 0.3), 1.0) * 5.0;
+    return vec4(mix(murkier.rgb, dottier.rgb, 0.3), 1.0) * vec4(gain);
 }
 
 void main(void) {
@@ -90,9 +91,7 @@ void main(void) {
 
     vec4 bottom = deflectedBright(sampled, lum, scaledCoordsRemainder);
     vec4 top = blockySmoothed(sampled);
-
-    // TODO: Modulate this mix for greater psychedelia.
-    vec3 mixed = mix(bottom.rgb, top.rgb, 0.0);
+    vec3 mixed = bottom.rgb + (top.rgb * vec3(layerMix));
 
     gl_FragColor = vec4(mixed, 1.0);
     // gl_FragColor = sampleFromLayer(modulationLayerSampler);
