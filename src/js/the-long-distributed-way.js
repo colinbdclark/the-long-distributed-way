@@ -2,11 +2,10 @@
 
 fluid.defaults("colin.theLongWay", {
     gradeNames: [
-        "aconite.compositor",
-        "aconite.compositor.autoPlay"
+        "aconite.compositor.withPlayButton"
     ],
 
-    fps: 60,
+    fps: 50,
 
     uniformModelMap: {
         layerMix: "layerMix",
@@ -368,7 +367,7 @@ fluid.defaults("colin.theLongWay.videoLayerSpeedSynth", {
 
     synthDef: {
         ugen: "flock.ugen.lfSaw",
-        freq: 1/80,
+        freq: 1/160,
         mul: 0.2,
         add: 0.8
     }
@@ -383,7 +382,7 @@ fluid.defaults("colin.theLongWay.modulationLayerSpeedSynth", {
 
     synthDef: {
         ugen: "flock.ugen.lfSaw",
-        freq: 1/70,
+        freq: 1/140,
         mul: 0.2,
         add: 0.8
     }
@@ -422,6 +421,8 @@ colin.theLongWay.modelUpdatingSynth.updateValue = function (that) {
 fluid.defaults("colin.theLongWay.layerMixSynth", {
     gradeNames: "colin.theLongWay.modelUpdatingSynth",
 
+    fps: "{theLongWay}.options.fps",
+
     targetModelPath: "layerMix",
 
     components: {
@@ -431,7 +432,7 @@ fluid.defaults("colin.theLongWay.layerMixSynth", {
     synthDef: {
         ugen: "flock.ugen.triOsc",
         phase: Math.PI,
-        freq: 1/15,
+        freq: 1/30,
         mul: 0.5,
         add: 0.5
     }
@@ -439,6 +440,8 @@ fluid.defaults("colin.theLongWay.layerMixSynth", {
 
 fluid.defaults("colin.theLongWay.lumThresholdSynth", {
     gradeNames: "colin.theLongWay.modelUpdatingSynth",
+
+    fps: "{theLongWay}.options.fps",
 
     targetModelPath: "lumThreshold",
 
@@ -448,7 +451,7 @@ fluid.defaults("colin.theLongWay.lumThresholdSynth", {
 
     synthDef: {
         ugen: "flock.ugen.triOsc",
-        freq: 1/145,
+        freq: 1/290,
         mul: 0.10,
         add: 0.90
     }
@@ -458,6 +461,8 @@ fluid.defaults("colin.theLongWay.lumThresholdSynth", {
 fluid.defaults("colin.theLongWay.gainSynth", {
     gradeNames: "colin.theLongWay.modelUpdatingSynth",
 
+    fps: "{theLongWay}.options.fps",
+
     targetModelPath: "gain",
 
     components: {
@@ -466,7 +471,7 @@ fluid.defaults("colin.theLongWay.gainSynth", {
 
     synthDef: {
         ugen: "flock.ugen.sinOsc",
-        freq: 1/75,
+        freq: 1/150,
         mul: 1,
         add: 5
     }

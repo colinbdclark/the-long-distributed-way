@@ -8,10 +8,6 @@
             body {
                 overflow:hidden;
             }
-
-            canvas {
-                cursor: none;
-            }
         </style>
 
         <link rel="stylesheet" href="node_modules/aconite/src/ui/css/stage.css" type="text/css" />
@@ -24,7 +20,8 @@
     </head>
     <body>
         <div class="aconite-video-container">
-            <canvas class="aconite-animator-canvas" width="1024" height="768" />
+            <img class="aconite-animator-play" src="node_modules/aconite/src/ui/images/play_overlay.png"></img>
+            <canvas class="aconite-animator-canvas" width="1064" height="798" />
         </div>
 
         <script>
