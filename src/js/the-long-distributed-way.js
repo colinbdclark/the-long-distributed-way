@@ -5,7 +5,7 @@ fluid.defaults("colin.theLongWay", {
         "aconite.compositor.withPlayButton"
     ],
 
-    fps: 50,
+    fps: 60,
 
     uniformModelMap: {
         layerMix: "layerMix",
