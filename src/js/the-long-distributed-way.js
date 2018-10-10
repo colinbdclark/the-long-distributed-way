@@ -70,7 +70,6 @@ fluid.defaults("colin.theLongWay.videoLayer", {
 fluid.defaults("colin.theLongWay.modulationLayer", {
     gradeNames: "aconite.clipSequencer.static",
 
-
     components: {
         layer: {
             type: "colin.theLongWay.videoLayer",
